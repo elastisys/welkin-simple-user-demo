@@ -1,0 +1,19 @@
+name: lint
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pre-commit/action@v3.0.1
+        env:
+          SKIP: no-commit-to-branch

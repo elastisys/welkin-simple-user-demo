@@ -1,0 +1,85 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: "https://github.com/pre-commit/pre-commit-hooks"
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        exclude: "[.](svg|drawio.xml)$"
+      - id: check-yaml
+        # Helm templates are not reaaaally YAML.
+        exclude: "[/]templates[/]"
+        args:
+          # Needed by mkdocs.yaml
+          # Implies --allow-multiple-documents
+          - "--unsafe"
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: no-commit-to-branch
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.4
+    hooks:
+      - id: codespell
+        name: check spelling
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.56.0
+    hooks:
+      - id: eslint
+        exclude: ^(user-demo/|docs/customer-quotes/|docs/tech-radar/)
+
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.14.0
+    hooks:
+      - id: markdownlint-cli2
+        name: lint markdown files
+        exclude: ^(.github|tests/validate-pull-request)/
+        args:
+          - --fix
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        exclude: /templates/|\.min\.|\.css$|\.html$|\.js$|\.md$|\.scss$|docs/img/|user-demo/|user-demo-dotnet/
+
+  - repo: local
+    hooks:
+      # must be before vale-run to install vale without conflict
+      - id: vale
+        name: lint prose in markdown files with vale - sync
+        alias: vale-sync
+        types: [markdown]
+        language: python
+        pass_filenames: false
+        require_serial: true
+        additional_dependencies:
+          - vale==3.9.1.0
+        entry: vale
+        args:
+          - sync
+
+      # must be after vale-sync to install vale without conflict
+      - id: vale
+        name: lint prose in markdown files with vale - run
+        alias: vale-run
+        types: [markdown]
+        language: python
+        additional_dependencies:
+          - vale==3.9.1.0
+        entry: vale
+        args:
+          - --output=line
+
+      - id: capitalize-common-names
+        name: Please capitalize common names
+        entry: "^[^`]{0,100} (git[Hh]ub|kubernetes|trivy|starboard|welkin)( |, |[.] )"
+        language: pygrep
+        files: ".*[.]md$"
+      - id: avoid-old-names
+        name: Use Welkin consistently
+        entry: "(Compliant[ ]Kubernetes|C[kK]8[sS][^_]|Complaint)"
+        language: pygrep
+        files: ".*[.]md$"
