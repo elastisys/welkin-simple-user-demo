@@ -38,18 +38,22 @@ ingress:
   enabled: true
   hostname: i-didnt-read-the-docs.example.com
   tls: true
-  ingressClassName: nginx
+  ingressClassName: traefik
+
+  # Traefik middlewares to create/enable on the ingress
+  middlewares:
+    ## Blocklisted IPs will get HTTP 403.
+    allowlist:
+      enabled: false
+      sourceRange:
+      - 98.128.193.2/32
+    ## Oauth authentication. Requires Oauth2-proxy installed.
+    ## (see ../oauth2-proxy.yaml for an example and more details.)
+    oauth:
+      enabled: false
+
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    ## Uncomment the line below to implement source IP allowlisting.
-    ## Blocklisted IPs will get HTTP 403.
-    # nginx.ingress.kubernetes.io/whitelist-source-range: 98.128.193.2/32
-    ## Uncomment the lines below to get OAuth authentication
-    ## You will also need to configure and install oauth2-proxy
-    ## (see ../oauth2-proxy.yaml for an example and more details.)
-    # nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
-    # nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
-    # nginx.ingress.kubernetes.io/auth-response-headers: "authorization"
 
 resources:
   # Most Welkin clusters require the application to specify resources.

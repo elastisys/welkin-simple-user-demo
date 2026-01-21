@@ -7,10 +7,22 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "welkin-user-demo.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+
   annotations:
+    {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
+    {{- if .Values.ingress.middlewares }}
+    {{- $m := list -}}
+    {{- range $name, $config := .Values.ingress.middlewares }}
+      {{- if $config.enabled }}
+        {{- $m = append $m (printf "%s-%s-%s@kubernetescrd" $.Release.Namespace $fullName $name) -}}
+      {{- end }}
+    {{- end }}
+    {{- if $m }}
+    traefik.ingress.kubernetes.io/router.middlewares: "{{ join ", " $m }}"
+    {{- end }}
+    {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:

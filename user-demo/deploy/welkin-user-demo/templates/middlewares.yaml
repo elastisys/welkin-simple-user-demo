@@ -1,0 +1,61 @@
+{{- $fullName := include "welkin-user-demo.fullname" . -}}
+
+{{- $allowlist := default false .Values.ingress.middlewares.allowlist.enabled -}}
+{{- if $allowlist -}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-allowlist
+spec:
+  ipAllowList:
+    {{- with .Values.ingress.middlewares.allowlist.sourceRange }}
+    sourceRange:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+{{- end }}
+
+---
+
+{{- $oauth := default false .Values.ingress.middlewares.oauth.enabled -}}
+{{- if $oauth -}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-forward-auth
+spec:
+  forwardAuth:
+    address: https://{{ .Values.ingress.hostname }}/oauth2/auth
+    trustForwardHeader: true
+    # Only needed if you will be using the 'Authorization' header.
+    authResponseHeaders:
+      - "Authorization"
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-redirect-auth
+spec:
+  errors:
+    status:
+      - "401-403"
+    service:
+      name: oauth2-proxy
+      port: 4180
+    query: "/oauth2/sign_in?rd={url}"
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-oauth
+spec:
+  chain:
+    middlewares:
+      # Note that the order is important
+      - name: {{ $fullName }}-redirect-auth
+      - name: {{ $fullName }}-forward-auth
+
+{{- end }}

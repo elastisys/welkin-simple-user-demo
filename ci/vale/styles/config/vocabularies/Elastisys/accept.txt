@@ -74,6 +74,7 @@ Terraform
 Thanos
 timesyncd
 Tekton
+Traefik
 Trivy
 typha
 Valkey
@@ -158,6 +159,7 @@ kubeconfig
 kubectl
 kubelet
 kubelogin
+Middleware
 Namespace
 PDB
 prober
