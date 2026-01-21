@@ -82,6 +82,8 @@ MD044: # proper-names
     - Kubespray
     - kube-prometheus-stack
     - LoadBalancer
+    - Middleware
+    - Middlewares
     - Network Policy
     - Network Policies
     - NetworkPolicy
@@ -114,6 +116,7 @@ MD044: # proper-names
     - S3
     - StatefulSet
     - Thanos
+    - Traefik
     - PgBouncer
     - "!!! welkin-enterprise"
     - "!!! welkin-managed"

@@ -1,4 +1,4 @@
-# This is an example oauth2-proxy deployment to be used with Nginx Ingress controller.
+# This is an example oauth2-proxy deployment to be used with Traefik Ingress controller.
 #
 # Usage
 # =====
@@ -6,7 +6,8 @@
 # 1. Start by reading and understanding:
 #
 # - https://oauth2-proxy.github.io/oauth2-proxy/#architecture
-# - https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/
+# - https://oauth2-proxy.github.io/oauth2-proxy/configuration/integrations/traefik
+# - https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/forwardauth/
 # - https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview
 # - https://kubernetes.io/docs/concepts/services-networking/ingress/
 # - https://elastisys.io/welkin/user-guide/network-model/
@@ -102,7 +103,7 @@ kind: Ingress
 metadata:
   name: oauth2-proxy
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
   - host: __INGRESS_HOST__
     http:
