@@ -53,7 +53,7 @@ ingress:
       enabled: false
 
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-prod-traefik
 
 resources:
   # Most Welkin clusters require the application to specify resources.
