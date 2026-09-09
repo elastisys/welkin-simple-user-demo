@@ -10,5 +10,5 @@ spec:
   - name: ./example.rules
     rules:
     - alert: ApplicationIsActuallyUsed
-      expr: rate(http_request_duration_seconds_count[1m])>1
+      expr: rate(http_request_duration_seconds_count[1h])>0
 {{- end }}
