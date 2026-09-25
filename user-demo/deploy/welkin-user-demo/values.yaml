@@ -39,6 +39,11 @@ ingress:
   hostname: i-didnt-read-the-docs.example.com
   tls: true
   ingressClassName: traefik
+  gateway:
+    # Enabling replaces the Ingress resource with Gateway API resources
+    enabled: false
+    name: traefik-gateway
+    namespace: traefik-system
 
   # Traefik middlewares to create/enable on the ingress
   middlewares:

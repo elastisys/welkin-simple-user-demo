@@ -1,0 +1,48 @@
+{{- if and .Values.ingress.enabled .Values.ingress.gateway.enabled -}}
+{{- $fullName := include "welkin-user-demo.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "welkin-user-demo.labels" . | nindent 4 }}
+
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+spec:
+  listeners:
+    - name: web
+      port: {{ $svcPort }}
+      protocol: HTTP
+      {{- with .Values.ingress.hostname }}
+      hostname: {{ . | quote }}
+      {{- end }}
+    {{- if .Values.ingress.tls }}
+    - name: websecure
+      {{- with .Values.ingress.hostname }}
+      hostname: {{ . | quote }}
+      {{- end }}
+      port: {{ $svcPort }}
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: v1
+            kind: Secret
+            name: {{ $fullName }}-tls
+    {{- end }}
+
+  {{- with .Values.ingress.gateway }}
+  parentRef:
+    kind: Gateway
+    name: {{ .name | quote }}
+    {{- with .namespace }}
+    namespace: {{ . | quote }}
+    {{- end }}
+  {{- end }}
+
+{{- end }}
